@@ -1,0 +1,37 @@
+.button {
+       -fx-background-color: #D9CEB2;
+       -fx-background-radius: 10;
+   }
+
+.button:hover {
+       -fx-background-color: #99B2B7;
+   }
+
+.scroll-pane {
+    -fx-background-color: #D9CEB2;
+    -fx-background-radius: 10;
+    -fx-padding: 10;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: #D9CEB2;
+    -fx-background-radius: 10;
+}
+
+.scroll-bar:vertical {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar:vertical .thumb {
+    -fx-background-color:  #948C75;
+    -fx-background-radius:  5;
+}
+
+.scroll-bar:vertical .increment-arrow,
+.scroll-bar:vertical .decrement-arrow {
+   -fx-shape: " ";
+}
+
+.label {
+    -fx-background-color: RED;
+}

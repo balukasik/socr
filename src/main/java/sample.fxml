@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="970.0" prefWidth="1300.0" style="-fx-background-color: #948C75;" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Controller">
+    <children>
+        <AnchorPane layoutX="14.0" layoutY="14.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="870.0" prefWidth="870.0" style="-fx-background-color: #D9CEB2; -fx-background-radius: 10;">
+            <children>
+                <AnchorPane fx:id="map" layoutX="20.0" layoutY="20.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="830.0" prefWidth="830.0" />
+            </children></AnchorPane>
+        <Button id="start" fx:id="start" alignment="CENTER" layoutX="898.0" layoutY="897.0" mnemonicParsing="false" onMouseClicked="#startAnimation" prefHeight="59.0" prefWidth="388.0" stylesheets="@main.css" text="Start" textFill="#7a6a53" wrapText="true" AnchorPane.rightAnchor="14.0">
+            <font>
+                <Font name="System Bold" size="24.0" />
+            </font></Button>
+        <Button layoutX="684.0" layoutY="897.0" mnemonicParsing="false" onMouseClicked="#openMapFileClicked" prefHeight="59.0" prefWidth="200.0" stylesheets="@main.css" text="Wczytaj mapę" textAlignment="JUSTIFY" textFill="#7a6a53" wrapText="true" AnchorPane.rightAnchor="416.0">
+            <font>
+                <Font name="System Bold" size="24.0" />
+            </font>
+        </Button>
+        <Button layoutX="400.0" layoutY="897.0" mnemonicParsing="false" onMouseClicked="#openPatientFileClicked" prefHeight="59.0" prefWidth="270.0" stylesheets="@main.css" text="Wczytaj pacjentów" textFill="#7a6a53" AnchorPane.rightAnchor="633.0">
+            <font>
+                <Font name="System Bold" size="24.0" />
+            </font></Button>
+        <Slider fx:id="animationSpeedSlider" layoutX="14.0" layoutY="897.0" max="5000.0" min="1.0" prefHeight="16.0" prefWidth="372.0" value="1000.0" />
+        <Label alignment="CENTER" layoutX="14.0" layoutY="920.0" prefHeight="36.0" prefWidth="372.0" style="-fx-background-color: #D9CEB2; -fx-background-radius: 10;" text="Prędkość animacji" textFill="#7a6a53">
+            <font>
+                <Font name="System Bold" size="24.0" />
+            </font>
+        </Label>
+        <Label fx:id="objectName" alignment="CENTER" layoutX="898.0" layoutY="14.0" prefHeight="59.0" prefWidth="388.0" style="-fx-background-color: #D9CEB2; -fx-background-radius: 10;" textFill="#7a6a53">
+            <font>
+                <Font name="System Bold" size="18.0" />
+            </font>
+        </Label>
+      <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" layoutX="898.0" layoutY="87.0" pannable="true" prefHeight="797.0" prefWidth="388.0" stylesheets="@main.css" />
+    </children>
+</AnchorPane>
