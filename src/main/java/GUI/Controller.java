@@ -106,6 +106,8 @@ public class Controller implements Initializable {
         border.setFill(Color.rgb(205, 190, 152));
         map.getChildren().add(border);
 
+        Dane.pobierzWagi();
+
         for (Droga droga : Dane.drogi) {
             Szpital szpital1 = Dane.szpitale.get(droga.getIdSzpitala1() - 1);
             Szpital szpital2 = Dane.szpitale.get(droga.getIdSzpitala2() - 1);
@@ -113,28 +115,32 @@ public class Controller implements Initializable {
                     convertPointY(szpital1.getY()),
                     convertPointX(szpital2.getX()),
                     convertPointY(szpital2.getY()));
-            line.setStrokeWidth(3);
-            map.getChildren().add(line);
-        }
-
-        for (Szpital szpital : Dane.szpitale) {
-            Circle circle = new Circle(convertPointX(szpital.getX()), convertPointY(szpital.getY()), 10);
-            Circle enteredCircle = new Circle(convertPointX(szpital.getX()), convertPointY(szpital.getY()), 20);
-            enteredCircle.setFill(Paint.valueOf("#948C75"));
-            Text freeSpaceText = new Text(circle.getCenterX(), circle.getCenterY(), Integer.toString(szpital.getWolne_lozka()));
+            Circle circle = new Circle(  convertPointX(  (szpital1.getX() + szpital2.getX())/2  )  ,    convertPointY(   (szpital1.getY() + szpital2.getY())/2  )  , 20);
+            circle.setFill(Color.rgb(255,255, 255));
+            Text freeSpaceText = new Text(circle.getCenterX(), circle.getCenterY(), Double.toString(droga.getOdlglosc()));
             freeSpaceText.setFont(Font.font("System", FontWeight.BOLD, 12));
             freeSpaceText.setX(freeSpaceText.getX() - freeSpaceText.getLayoutBounds().getWidth() / 2);
             freeSpaceText.setY(freeSpaceText.getY() + freeSpaceText.getLayoutBounds().getHeight() / 4);
+            line.setStrokeWidth(3);
+            map.getChildren().add(line);
+            map.getChildren().add(circle);
+            map.getChildren().add(freeSpaceText);
+
+
+
+        }
+
+        for (Szpital szpital : Dane.szpitale) {
+            Circle circle = new Circle(convertPointX(szpital.getX()), convertPointY(szpital.getY()), 30);
+            Circle enteredCircle = new Circle(convertPointX(szpital.getX()), convertPointY(szpital.getY()), 40);
+            enteredCircle.setFill(Paint.valueOf("#948C75"));
             enteredCircle.addEventHandler(MouseEvent.MOUSE_EXITED, mouseEvent -> {
                 map.getChildren().remove(enteredCircle);
-                map.getChildren().remove(freeSpaceText);
                 objectName.setText(szpital.getNazwa());
             });
             circle.addEventHandler(MouseEvent.MOUSE_ENTERED, mouseEvent -> {
                 objectName.setText(szpital.getNazwa());
-                freeSpaceText.setText(Integer.toString(szpital.getWolne_lozka()));
                 map.getChildren().add(enteredCircle);
-                map.getChildren().add(freeSpaceText);
             });
             circle.addEventHandler(MouseEvent.MOUSE_ENTERED, mouseEvent -> objectName.setText(szpital.getNazwa()));
             map.getChildren().add(circle);
@@ -238,7 +244,7 @@ public class Controller implements Initializable {
             //id w�z�a startowego
             int startId = 1;
             int[] drogaPacjenta = Dijkstra.drogaPacjenta(startId);
-            String logText = "Pacjent " + pacjent.getId() + ":\n";
+            String logText = "Droga " + pacjent.getId() + ":\n";
             System.out.println(drogaPacjenta.length);
             for (int i : drogaPacjenta) {
                 Szpital szpital = Dane.szpitale.get(i);
@@ -246,11 +252,7 @@ public class Controller implements Initializable {
                 path.getElements().add(new LineTo(convertPointX(szpital.getX()), convertPointY(szpital.getY())));
             }
 
-            if (Dane.szpitale.get(drogaPacjenta[drogaPacjenta.length - 1]).getWolne_lozka() > 0) {
-                logText += "\tPacjent przyjęty";
-            } else {
-                logText += "\tBrak miejsc, pacjent nieprzyjęty\n";
-            }
+
             logs.setText(logText + logs.getText());
             PathTransition pathTransition = new PathTransition(Duration.millis(animationSpeed * drogaPacjenta.length), path, pacjent.getNode());
             pathTransition.setOnFinished(new EventHandler<ActionEvent>() {

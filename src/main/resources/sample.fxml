@@ -22,7 +22,7 @@
                 <Font name="System Bold" size="24.0" />
             </font>
         </Button>
-        <Button layoutX="400.0" layoutY="897.0" mnemonicParsing="false" onMouseClicked="#openPatientFileClicked" prefHeight="59.0" prefWidth="270.0" stylesheets="@main.css" text="Wczytaj pacjentów" textFill="#7a6a53" AnchorPane.rightAnchor="633.0">
+        <Button layoutX="400.0" layoutY="897.0" mnemonicParsing="false" onMouseClicked="#openPatientFileClicked" prefHeight="59.0" prefWidth="270.0" stylesheets="@main.css" text="Wybierz trase" textFill="#7a6a53" AnchorPane.rightAnchor="633.0">
             <font>
                 <Font name="System Bold" size="24.0" />
             </font></Button>
