@@ -128,6 +128,7 @@ public class Controller implements Initializable {
 
 
 
+
         }
 
         for (Szpital szpital : Dane.szpitale) {
@@ -223,6 +224,9 @@ public class Controller implements Initializable {
         path.getElements().add(new MoveTo(startX, startY));
         path.getElements().add(new LineTo(endX, endY));
 
+
+
+
         PathTransition pathTransition = new PathTransition(Duration.millis(animationSpeed), path, node);
         pathTransition.play();
     }
@@ -262,6 +266,21 @@ public class Controller implements Initializable {
                     if (patientsQueue.size() != 0 || Dane.pacjenci.size() != 0) {
                         moveNextPatient();
                     }
+
+                    for (Droga droga : Dane.drogi) {
+                        Szpital szpital1 = Dane.szpitale.get(droga.getIdSzpitala1() - 1);
+                        Szpital szpital2 = Dane.szpitale.get(droga.getIdSzpitala2() - 1);
+                        Circle circle = new Circle(  convertPointX(  (szpital1.getX() + szpital2.getX())/2  )  ,    convertPointY(   (szpital1.getY() + szpital2.getY())/2  )  , 20);
+                        circle.setFill(Color.rgb(255,255, 255));
+                        Text freeSpaceText = new Text(circle.getCenterX(), circle.getCenterY(), Double.toString(droga.getOdlglosc()));
+                        freeSpaceText.setFont(Font.font("System", FontWeight.BOLD, 12));
+                        freeSpaceText.setX(freeSpaceText.getX() - freeSpaceText.getLayoutBounds().getWidth() / 2);
+                        freeSpaceText.setY(freeSpaceText.getY() + freeSpaceText.getLayoutBounds().getHeight() / 4);
+                        map.getChildren().add(circle);
+                        map.getChildren().add(freeSpaceText);
+
+                    }
+
                 }
             });
 
