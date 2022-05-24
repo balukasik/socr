@@ -4,6 +4,7 @@ public class GraphNode {
 	private int id;
 	private GraphNode poprzednik;
 	private double koszt;
+
 	public GraphNode(int id, GraphNode poprzednik,double koszt) {
 		this.id = id;
 		this.poprzednik = poprzednik;

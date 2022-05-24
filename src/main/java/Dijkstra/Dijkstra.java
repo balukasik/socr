@@ -12,13 +12,13 @@ public class Dijkstra {
 
 	public Dijkstra(ArrayList<Szpital> szpitale) {
 		this.nodes = new ArrayList<GraphNode>();
-		for (int i = 0; i < szpitale.size(); i++) {
-			nodes.add(new GraphNode(szpitale.get(i).getId(), null, 0));
+		for (Szpital szpital : szpitale) {
+			nodes.add(new GraphNode(szpital.getId(), null, 0));
 		}
 	}
 
 	private DoubleV2[] algorithm(ArrayList<GraphNode> nodes, ArrayList<Droga> drogi, int startId) {
-		DoubleV2[] d = new DoubleV2[nodes.size()];;
+		DoubleV2[] d = new DoubleV2[nodes.size()];
 		for (int i = 0; i < nodes.size(); i++) {
 			d[i] = new DoubleV2(Double.MAX_VALUE);
 			d[i].id = i+1;
@@ -26,7 +26,7 @@ public class Dijkstra {
 		d[startId-1].value = 0;
 		Kolejka q = new Kolejka();
 		for (int i = 0; i < nodes.size(); i++) {
-			q.wstaw(new QueueNode(nodes.get(i), d[i]));
+			q.wstaw(new QueueNode(nodes.get(i), nodes.get(i).getKoszt()));
 		}
 		while (q.isNotEmpty()) {
 			GraphNode tmp = q.pobierz();

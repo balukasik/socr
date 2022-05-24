@@ -4,7 +4,7 @@ import Data.Dane;
 import Data.Droga;
 import Data.Pacjent;
 import Data.Szpital;
-import Dijkstra.Dijkstra;
+import Dijkstra.Dijkstra2;
 import IsInside.IsInside;
 import Jarvis.Jarvis;
 import javafx.animation.PathTransition;
@@ -106,8 +106,6 @@ public class Controller implements Initializable {
         border.setFill(Color.rgb(205, 190, 152));
         map.getChildren().add(border);
 
-        Dane.pobierzWagi();
-
         for (Droga droga : Dane.drogi) {
             Szpital szpital1 = Dane.szpitale.get(droga.getIdSzpitala1() - 1);
             Szpital szpital2 = Dane.szpitale.get(droga.getIdSzpitala2() - 1);
@@ -147,7 +145,6 @@ public class Controller implements Initializable {
             map.getChildren().add(circle);
         }
 
-        map.addEventHandler(MouseEvent.MOUSE_CLICKED, this::addPatientOnClick);
 
     }
 
@@ -160,20 +157,6 @@ public class Controller implements Initializable {
         if(Dane.readPacjent(file.getAbsolutePath()) == -1) {
             return;
         }
-    }
-
-    @FXML
-    public void addPatientOnClick(Event e) {
-        Dane.pobierzWagi();
-        MouseEvent mouseEvent = (MouseEvent) e;
-        int x = convertPointXFromScene(mouseEvent.getSceneX() - 34);
-        int y = convertPointYFromScene(mouseEvent.getSceneY() - 34);
-        Pacjent newPatient = new Pacjent(Dane.pacjenci.size(), x, y);
-        Circle circle = new Circle(mouseEvent.getSceneX() - 34, mouseEvent.getSceneY() - 34, 5);
-        newPatient.setNode(circle);
-        patientsQueue.add(newPatient);
-        circle.setFill(Color.RED);
-        map.getChildren().add(circle);
     }
 
     private void calculateScaleMap() {
@@ -211,26 +194,21 @@ public class Controller implements Initializable {
         return (int) (middlePanel + ((middleMapY - (y - mapDownBorder)) * mapScale));
     }
 
-    private int convertPointXFromScene(double x) {
-        return (int) (middleMapX + mapLeftBorder - ((middlePanel - x) / mapScale));
+    private void updateDrogi(){
+        for (Droga droga : Dane.drogi) {
+            Szpital szpital1 = Dane.szpitale.get(droga.getIdSzpitala1() - 1);
+            Szpital szpital2 = Dane.szpitale.get(droga.getIdSzpitala2() - 1);
+            Circle circle = new Circle(  convertPointX(  (szpital1.getX() + szpital2.getX())/2  )  ,    convertPointY(   (szpital1.getY() + szpital2.getY())/2  )  , 20);
+            circle.setFill(Color.rgb(255,255, 255));
+            Text freeSpaceText = new Text(circle.getCenterX(), circle.getCenterY(), Double.toString(droga.getOdlglosc()));
+            freeSpaceText.setFont(Font.font("System", FontWeight.BOLD, 12));
+            freeSpaceText.setX(freeSpaceText.getX() - freeSpaceText.getLayoutBounds().getWidth() / 2);
+            freeSpaceText.setY(freeSpaceText.getY() + freeSpaceText.getLayoutBounds().getHeight() / 4);
+            map.getChildren().add(circle);
+            map.getChildren().add(freeSpaceText);
+
+        }
     }
-
-    private int convertPointYFromScene(double y) {
-        return (int) (middleMapY + mapDownBorder + ((middlePanel - y) / mapScale));
-    }
-
-    private void moveTo(Node node, double startX, double startY, int endX, int endY) {
-        Path path = new Path();
-        path.getElements().add(new MoveTo(startX, startY));
-        path.getElements().add(new LineTo(endX, endY));
-
-
-
-
-        PathTransition pathTransition = new PathTransition(Duration.millis(animationSpeed), path, node);
-        pathTransition.play();
-    }
-
     public void moveNextPatient() {
         Pacjent pacjent;
         if (patientsQueue.size() != 0) {
@@ -245,42 +223,31 @@ public class Controller implements Initializable {
         if(IsInside.isInside(Jarvis.convexHull(), pacjent)) {
             Path path = new Path();
             path.getElements().add(new MoveTo(((Circle) pacjent.getNode()).getCenterX(), ((Circle) pacjent.getNode()).getCenterY()));
-            //id w�z�a startowego
-            int startId = 1;
-            int[] drogaPacjenta = Dijkstra.drogaPacjenta(startId);
-            String logText = "Droga " + pacjent.getId() + ":\n";
-            System.out.println(drogaPacjenta.length);
-            for (int i : drogaPacjenta) {
-                Szpital szpital = Dane.szpitale.get(i);
+            String logText = "Kierowca " + pacjent.getId() + ":\n";
+            int startId = Jarvis.findNearest(pacjent).getId();
+            while(pacjent.getDestination() != startId) {
+                //ANIMATION
+                Szpital szpital = Dane.getSzpital(startId);
                 logText += "\t" + szpital.getNazwa() + "\n";
                 path.getElements().add(new LineTo(convertPointX(szpital.getX()), convertPointY(szpital.getY())));
-            }
 
+                //CALCULATION
+                startId = Dijkstra2.drogaPacjenta(startId, pacjent.getDestination());
+                Dane.pobierzWagi();
+                updateDrogi();
+            }
+            Szpital szpital = Dane.getSzpital(startId);
+            logText += "\t" + szpital.getNazwa() + "\n";
+            path.getElements().add(new LineTo(convertPointX(szpital.getX()), convertPointY(szpital.getY())));
 
             logs.setText(logText + logs.getText());
-            PathTransition pathTransition = new PathTransition(Duration.millis(animationSpeed * drogaPacjenta.length), path, pacjent.getNode());
+            PathTransition pathTransition = new PathTransition(Duration.millis(animationSpeed), path, pacjent.getNode());
             pathTransition.setOnFinished(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent actionEvent) {
-                    Dane.szpitale.get(drogaPacjenta[drogaPacjenta.length - 1]).decreaseWolneMiejsca();
                     if (patientsQueue.size() != 0 || Dane.pacjenci.size() != 0) {
                         moveNextPatient();
                     }
-
-                    for (Droga droga : Dane.drogi) {
-                        Szpital szpital1 = Dane.szpitale.get(droga.getIdSzpitala1() - 1);
-                        Szpital szpital2 = Dane.szpitale.get(droga.getIdSzpitala2() - 1);
-                        Circle circle = new Circle(  convertPointX(  (szpital1.getX() + szpital2.getX())/2  )  ,    convertPointY(   (szpital1.getY() + szpital2.getY())/2  )  , 20);
-                        circle.setFill(Color.rgb(255,255, 255));
-                        Text freeSpaceText = new Text(circle.getCenterX(), circle.getCenterY(), Double.toString(droga.getOdlglosc()));
-                        freeSpaceText.setFont(Font.font("System", FontWeight.BOLD, 12));
-                        freeSpaceText.setX(freeSpaceText.getX() - freeSpaceText.getLayoutBounds().getWidth() / 2);
-                        freeSpaceText.setY(freeSpaceText.getY() + freeSpaceText.getLayoutBounds().getHeight() / 4);
-                        map.getChildren().add(circle);
-                        map.getChildren().add(freeSpaceText);
-
-                    }
-
                 }
             });
 

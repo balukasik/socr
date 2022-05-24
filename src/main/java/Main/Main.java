@@ -41,12 +41,6 @@ public class Main {
 		System.out.println(isInside.isInside(result,szpital));
 		Szpital nearest = Jarvis.findNearest(szpital);
 		System.out.println(nearest.getNazwa());
-		
-		int[] test = Dijkstra.drogaPacjenta(1);
-		for (int t : test) {
-			System.out.println(t);
-		}
-		
 
 	}
 
