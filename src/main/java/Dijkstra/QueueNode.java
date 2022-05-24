@@ -3,19 +3,19 @@ package Dijkstra;
 public class QueueNode {
 
 	private GraphNode value;
-	private DoubleV2 priority;
+	private double priority;
 
-	public QueueNode(GraphNode value, DoubleV2 priority) {
+	public QueueNode(GraphNode value, double priority) {
 
-		this.setValue(value);
-		this.setPriority(priority);
+		this.value = value;
+		this.priority = priority;
 	}
 
 	public double getPriority() {
-		return priority.value;
+		return priority;
 	}
 
-	public void setPriority(DoubleV2 priority) {
+	public void setPriority(double priority) {
 		this.priority = priority;
 	}
 

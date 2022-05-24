@@ -35,7 +35,7 @@ public class Droga {
         return odlglosc;
     }
 
-    public void setOdleglosc(double odlglosc){this.odlglosc = odlglosc;System.out.println("odległość update");}
+    public void setOdleglosc(double odlglosc){this.odlglosc = odlglosc;}
 
     public int getId() {
         return id;

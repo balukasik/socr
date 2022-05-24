@@ -138,7 +138,7 @@ public class Dane {
 						line = br.readLine();
 					} else if (sekcja == 1) {
 						String[] attributes = line.trim().split("\\s*\\|\\s*");
-						if (attributes.length != 3) {
+						if (attributes.length != 4) {
 							Controller.showErrorWindow("Zła ilość atrybutów\nLinia: " + lineNum);
 							resetPacjenci();
 							return -1;
@@ -259,6 +259,15 @@ public class Dane {
 		drogi = new ArrayList<>();
 		pacjenci = new ArrayList<>();
 
+	}
+
+	public static Szpital getSzpital(int id){
+		for(Szpital szpital : szpitale){
+			if(szpital.getId() == id){
+				return szpital;
+			}
+		}
+		return null;
 	}
 
 }
