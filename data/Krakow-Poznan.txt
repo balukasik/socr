@@ -1,0 +1,2 @@
+# Droga (id | wsp. x | wsp.y | cel id)
+1 | 31 | 20| 5

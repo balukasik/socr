@@ -7,7 +7,7 @@ app = Flask(__name__)
 @app.route("/<number>")
 def repo_list(number):
     lista = []
-    for i in range(int(number)):
+    for i in range(int(number)+1):
         lista.append(randint(300,600))
     return jsonify(lista)
 

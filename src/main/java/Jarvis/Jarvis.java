@@ -51,7 +51,7 @@ public class Jarvis {
 		List<Szpital> szpitale = new ArrayList<>(Dane.szpitale);
 		Szpital nearest = szpitale.get(0);
 		for(int i=1;i<szpitale.size();i++){
-			if(Utility.distance(szpitale.get(i),pacjent) < Utility.distance(nearest,pacjent) && szpitale.get(i).getLozka()>0){
+			if(Utility.distance(szpitale.get(i),pacjent) < Utility.distance(nearest,pacjent) ){
 				nearest = szpitale.get(i);
 			}
 		}

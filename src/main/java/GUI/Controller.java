@@ -41,6 +41,8 @@ import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
 
+    private int trasa_id;
+
     private final int PANEL_SIZE = 830;
 
     private double middleMapX;
@@ -55,6 +57,8 @@ public class Controller implements Initializable {
     private final int middlePanel = PANEL_SIZE / 2;
 
     private int animationSpeed = 1000;
+
+    private int ij=0;
 
     private Queue<Pacjent> patientsQueue = new LinkedList<>();
 
@@ -143,7 +147,10 @@ public class Controller implements Initializable {
             });
             circle.addEventHandler(MouseEvent.MOUSE_ENTERED, mouseEvent -> objectName.setText(szpital.getNazwa()));
             map.getChildren().add(circle);
+
         }
+        trasa_id=0;
+        ij=0;
 
 
     }
@@ -157,6 +164,11 @@ public class Controller implements Initializable {
         if(Dane.readPacjent(file.getAbsolutePath()) == -1) {
             return;
         }
+
+        trasa_id=ij;
+        String logText =  "Trasa "+trasa_id + "\n" ;
+        logs.setText(logText + logs.getText());
+        ij=ij+1;
     }
 
     private void calculateScaleMap() {
@@ -211,43 +223,47 @@ public class Controller implements Initializable {
     }
     public void moveNextPatient() {
         Pacjent pacjent;
-        if (patientsQueue.size() != 0) {
-            pacjent = patientsQueue.remove();
-        } else {
-            pacjent = Dane.pacjenci.remove(0);
-            Circle circle = new Circle(convertPointX(pacjent.getX()), convertPointY(pacjent.getY()), 5);
-            pacjent.setNode(circle);
-            circle.setFill(Color.RED);
-            map.getChildren().add(circle);
-        }
+        
+        pacjent = Dane.pacjenci.get(trasa_id);
+        Circle circle1 = new Circle(convertPointX(pacjent.getX()), convertPointY(pacjent.getY()), 5);
+        circle1.setFill(Color.BLUE);
+        map.getChildren().add(circle1);
+
+        Circle circle = new Circle(convertPointX(pacjent.getX()), convertPointY(pacjent.getY()), 5);
+        pacjent.setNode(circle);
+        circle.setFill(Color.RED);
+        map.getChildren().add(circle);
+        
         if(IsInside.isInside(Jarvis.convexHull(), pacjent)) {
             Path path = new Path();
             path.getElements().add(new MoveTo(((Circle) pacjent.getNode()).getCenterX(), ((Circle) pacjent.getNode()).getCenterY()));
-            String logText = "Kierowca " + pacjent.getId() + ":\n";
             int startId = Jarvis.findNearest(pacjent).getId();
-            while(pacjent.getDestination() != startId) {
+
                 //ANIMATION
-                Szpital szpital = Dane.getSzpital(startId);
-                logText += "\t" + szpital.getNazwa() + "\n";
-                path.getElements().add(new LineTo(convertPointX(szpital.getX()), convertPointY(szpital.getY())));
+            Szpital szpital = Dane.getSzpital(startId);
+            String logText = "\t" + szpital.getNazwa() ;
+
 
                 //CALCULATION
-                startId = Dijkstra2.drogaPacjenta(startId, pacjent.getDestination());
-                Dane.pobierzWagi();
-                updateDrogi();
-            }
-            Szpital szpital = Dane.getSzpital(startId);
-            logText += "\t" + szpital.getNazwa() + "\n";
-            path.getElements().add(new LineTo(convertPointX(szpital.getX()), convertPointY(szpital.getY())));
+            startId = Dijkstra2.drogaPacjenta(startId, pacjent.getDestination());
+            Szpital szpital2 = Dane.getSzpital(startId);
+            path.getElements().add(new LineTo(convertPointX(szpital2.getX()), convertPointY(szpital2.getY())));
+            Dane.pobierzWagi();
+            updateDrogi();
+            logText += "---->"+ szpital2.getNazwa()+ " : " + Dane.odl(szpital.getId(),szpital2.getId()) + "\n";
+            pacjent.setX((int)szpital2.getX());
+            pacjent.setY((int)szpital2.getY());
+
+
 
             logs.setText(logText + logs.getText());
             PathTransition pathTransition = new PathTransition(Duration.millis(animationSpeed), path, pacjent.getNode());
             pathTransition.setOnFinished(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent actionEvent) {
-                    if (patientsQueue.size() != 0 || Dane.pacjenci.size() != 0) {
-                        moveNextPatient();
-                    }
+                    System.out.println("next");
+                    moveNextPatient();
+
                 }
             });
 

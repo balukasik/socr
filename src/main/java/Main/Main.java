@@ -3,7 +3,6 @@ package Main;
 import Data.Dane;
 import Data.Pacjent;
 import Data.Szpital;
-import Dijkstra.Dijkstra;
 import IsInside.IsInside;
 import Jarvis.Jarvis;
 
@@ -32,8 +31,7 @@ public class Main {
 		}
 		System.out.println("koniec" );
 
-		Dane.clearObjects();
-		Dane.skrzyzowania();
+
 	
 		
 		Pacjent szpital = new Pacjent(0,400,400);
