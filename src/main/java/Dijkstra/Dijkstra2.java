@@ -72,6 +72,9 @@ public class Dijkstra2 {
     }
 
     private int destination(int startId, int destiantionId){
+        if(startId == destiantionId){
+            return startId;
+        }
         GraphNode tmp = getNode(destiantionId);
         while (tmp != null && tmp.getPoprzednik() != getNode(startId)) {
             tmp = tmp.getPoprzednik();

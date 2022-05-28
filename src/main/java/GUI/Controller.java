@@ -42,7 +42,7 @@ import java.util.ResourceBundle;
 public class Controller implements Initializable {
 
     private int trasa_id;
-
+    private File file;
     private final int PANEL_SIZE = 830;
 
     private double middleMapX;
@@ -83,14 +83,18 @@ public class Controller implements Initializable {
 
     @FXML
     public void openMapFileClicked(Event e) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir") + "\\data"));
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Pliki tekstowe", "*.txt"));
-        File file = fileChooser.showOpenDialog(new Stage());
+        if(file == null){
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setInitialDirectory(new File(System.getProperty("user.dir") + "\\data"));
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Pliki tekstowe", "*.txt"));
+            file = fileChooser.showOpenDialog(new Stage());
+        }
+
         if(file == null) {
             return;
         }
         if(Dane.read(file.getAbsolutePath()) == -1) {
+            file = null;
             return;
         }
         map.getChildren().removeAll(map.getChildren());
@@ -157,6 +161,7 @@ public class Controller implements Initializable {
 
     @FXML
     public void openPatientFileClicked(Event e) {
+        openMapFileClicked(null);
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File(System.getProperty("user.dir") + "\\data"));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Pliki tekstowe", "*.txt"));
@@ -223,7 +228,6 @@ public class Controller implements Initializable {
     }
     public void moveNextPatient() {
         Pacjent pacjent;
-        
         pacjent = Dane.pacjenci.get(trasa_id);
         Circle circle1 = new Circle(convertPointX(pacjent.getX()), convertPointY(pacjent.getY()), 5);
         circle1.setFill(Color.BLUE);
@@ -240,7 +244,9 @@ public class Controller implements Initializable {
             Path path = new Path();
             path.getElements().add(new MoveTo(((Circle) pacjent.getNode()).getCenterX(), ((Circle) pacjent.getNode()).getCenterY()));
             int startId = Jarvis.findNearest(pacjent).getId();
-
+            if(startId == pacjent.getDestination()){
+                return;
+            }
                 //ANIMATION
             Szpital szpital = Dane.getSzpital(startId);
             String logText = "\t" + szpital.getNazwa() ;
@@ -264,7 +270,9 @@ public class Controller implements Initializable {
                 @Override
                 public void handle(ActionEvent actionEvent) {
                     System.out.println("next");
-                    moveNextPatient();
+                    if(Dane.pacjenci.size() != 0){
+                        moveNextPatient();
+                    }
 
                 }
             });
