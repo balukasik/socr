@@ -235,6 +235,8 @@ public class Controller implements Initializable {
         map.getChildren().add(circle);
         
         if(IsInside.isInside(Jarvis.convexHull(), pacjent)) {
+            Dane.pobierzWagi();
+            updateDrogi();
             Path path = new Path();
             path.getElements().add(new MoveTo(((Circle) pacjent.getNode()).getCenterX(), ((Circle) pacjent.getNode()).getCenterY()));
             int startId = Jarvis.findNearest(pacjent).getId();
@@ -248,8 +250,7 @@ public class Controller implements Initializable {
             startId = Dijkstra2.drogaPacjenta(startId, pacjent.getDestination());
             Szpital szpital2 = Dane.getSzpital(startId);
             path.getElements().add(new LineTo(convertPointX(szpital2.getX()), convertPointY(szpital2.getY())));
-            Dane.pobierzWagi();
-            updateDrogi();
+
             logText += "---->"+ szpital2.getNazwa()+ " : " + Dane.odl(szpital.getId(),szpital2.getId()) + "\n";
             pacjent.setX((int)szpital2.getX());
             pacjent.setY((int)szpital2.getY());
@@ -258,6 +259,7 @@ public class Controller implements Initializable {
 
             logs.setText(logText + logs.getText());
             PathTransition pathTransition = new PathTransition(Duration.millis(animationSpeed), path, pacjent.getNode());
+
             pathTransition.setOnFinished(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent actionEvent) {
@@ -266,6 +268,7 @@ public class Controller implements Initializable {
 
                 }
             });
+
 
             pathTransition.play();
         } else {
